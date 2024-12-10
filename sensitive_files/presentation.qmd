@@ -1,0 +1,403 @@
+---
+title: "Cognitive and Noncognitive Factors in Educational Production"
+author: "Beatriz Gietner"
+date: "September 30, 2024"
+institute: "UCD"
+format:
+  beamer:
+    theme: "Madrid"
+    colortheme: "dolphin"
+    fonttheme: "structurebold"
+    navigation: horizontal
+    section-titles: true
+    toc: false
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
+---
+
+# Questions
+  - What are the relative contributions of cognitive and noncognitive skills to academic performance?
+  - To what extent can noncognitive skills substitute for cognitive skills?
+  - Which type of skill improvement has a greater impact on grades?
+  
+  # Introduction
+  
+  - Context: Irish secondary students
+- Methodology: linear and translog production functions
+- Main contribution: Translog production function analysis
+- Key insights:
+  - Non-linear relationships
+- Varying substitution elasticities
+- Nuanced view of skill complementarity
+
+# Data and Model Specification
+
+## Main Equation
+
+$$
+  \text{Points JC}_{i,w,l} = \beta_0 + \beta_C \cdot \text{Cognition}_{i,w} + \sum_{j=1}^J \beta_{Nj} \cdot \text{NonCognition}_{i,w,k,j} + ...
+$$
+  
+## Key Components
+  
+- DV: Junior Cert scores (Maths, English)
+- Cognitive Ability: PC (Naming, Maths, Vocabulary)
+- Noncognitive Measures: SDQ (4 scales), TIPI (5 scales)
+- Controls: SES, parental education, income, school characteristics
+
+# Results
+
+## Linear Estimation - TIPI
+
+[Insert table or graph here]
+
+## Linear Estimation - SDQ
+
+[Insert table or graph here]
+
+# Discussion
+
+- Cognitive Skills: Strongest predictor of academic performance
+- Noncognitive Skills: Focused Behaviour and Conscientiousness significant
+- Interaction Effects: Negative interactions between cognitive and noncognitive skills
+- Gender Differences: Boys perform worse, especially in English
+
+# Conclusion
+
+- Cognitive skills: Primary predictor of performance
+- Noncognitive skills: Significant but smaller effects
+- Gender differences: Varying impacts across skills and subjects
+- Policy implications: Target both cognitive and noncognitive skills
+
+
+```{r Code}
+# First part
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Create dataframe with the extracted data, including only significant effects
+data <- data.frame(
+  Variable = c("Cognition", "Agreeableness", "Conscientiousness", "Emotional stability", "Male", "Cognition × Emot.", "Cognition × Open."),
+  Maths_Coef = c(0.7176, 0.0309, 0.1371, 0.0580, -0.1167, -0.0678, 0.0047),
+  Maths_SE = c(0.0161, 0.0210, 0.0211, 0.0211, 0.0400, 0.0156, 0.0154),
+  English_Coef = c(0.4483, 0.0369, 0.0801, 0.0091, -0.4443, -0.0262, -0.0234),
+  English_SE = c(0.0138, 0.0181, 0.0181, 0.0182, 0.0343, 0.0134, 0.0134)
+)
+
+# Reshape data from wide to long format
+data_long <- data %>%
+  pivot_longer(cols = -Variable, 
+               names_to = c("Subject", ".value"), 
+               names_pattern = "(.*)_(.*)")
+
+# Calculate confidence intervals
+data_long <- data_long %>%
+  mutate(lower_ci = Coef - 1.96 * SE,
+         upper_ci = Coef + 1.96 * SE)
+
+# Calculate the range needed for the y-axis
+y_min <- min(data_long$lower_ci, na.rm = TRUE)
+y_max <- max(data_long$upper_ci, na.rm = TRUE)
+
+# Create the plot
+ggplot(data_long, aes(x = reorder(Variable, Coef), y = Coef, color = Subject)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                position = position_dodge(width = 0.5), width = 0.2) +
+  scale_color_manual(values = c("Maths" = "#2c7fb8", "English" = "#f0a530")) +
+  labs(title = "Effects of Cognitive Ability and Personality Traits (TIPI) \non Academic Performance",
+       subtitle = "Main Effects and Interactions (95% CI)",
+       y = "Standardized Coefficient",
+       x = "",
+       color = "Subject") +
+  theme_minimal() +
+  theme(legend.position = "top",
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  coord_flip() +
+  scale_y_continuous(limits = c(-0.6, 0.8), breaks = seq(-0.6, 0.8, by = 0.2), labels = function(x) sprintf("%.1f", x))
+
+
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Create dataframe with the extracted data for Model 3
+data <- data.frame(
+  Variable = c("Cognition", "Emotional Resilience", "Good Conduct", "Focused Behaviour", 
+               "Positive Peer Relationships", "Male", "Cognition × E.R.", 
+               "Cognition × G.C.", "Cognition × F.B.", "Cognition × P.P.R."),
+  Maths_Coef = c(0.6703, 0.0462, 0.0740, 0.2166, 0.0014, -0.0693, -0.0316, 0.0126, -0.0565, -0.0134),
+  Maths_SE = c(0.0164, 0.0227, 0.0234, 0.0236, 0.0218, 0.0402, 0.0161, 0.0181, 0.0171, 0.0148),
+  English_Coef = c(0.4170, 0.0021, -0.0183, 0.1795, 0.0573, -0.4007, -0.0176, 0.0266, -0.0735, -0.0264),
+  English_SE = c(0.0141, 0.0194, 0.0201, 0.0202, 0.0188, 0.0345, 0.0139, 0.0157, 0.0148, 0.0128)
+)
+
+# Reshape data from wide to long format
+data_long <- data %>%
+  pivot_longer(cols = -Variable, 
+               names_to = c("Subject", ".value"), 
+               names_pattern = "(.*)_(.*)")
+
+# Calculate confidence intervals
+data_long <- data_long %>%
+  mutate(lower_ci = Coef - 1.96 * SE,
+         upper_ci = Coef + 1.96 * SE)
+
+# Create the plot
+ggplot(data_long, aes(x = reorder(Variable, Coef), y = Coef, color = Subject)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                position = position_dodge(width = 0.5), width = 0.2) +
+  scale_color_manual(values = c("Maths" = "#2c7fb8", "English" = "#f0a530")) +
+  labs(title = "Effects of Cognitive Ability, Psychological Well-Being and \nBehavioral Tendencies (SDQ) on Academic Performance",
+       subtitle = "Main Effects and Interactions (95% CI)",
+       y = "Standardized Coefficient",
+       x = "",
+       color = "Subject") +
+  theme_minimal() +
+  theme(legend.position = "top",
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  coord_flip() +
+  scale_y_continuous(limits = c(-0.6, 0.8), 
+                     breaks = seq(-0.6, 0.8, by = 0.2),
+                     labels = function(x) sprintf("%.1f", x))
+
+# Save the plot
+ggsave("sdq_model3_effects_dotplot.png", width = 12, height = 8, dpi = 300)
+
+# Second part
+
+# Maths
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Create dataframe with the extracted data for Maths, excluding A
+data <- data.frame(
+  Parameter = rep(c("α (Cognition)", "β (Noncognition)", "γ1 (Cognition^2)", "γ2 (Noncognition^2)", "γ12 (Cognition*Noncognition)"), each = 6),
+  Model = rep(rep(c("TIPI (Conscientiousness)", "SDQ (Focused Behaviour)"), each = 3), 5),
+  Sample = rep(c("Full Sample", "Boys", "Girls"), 10),
+  Estimate = c(
+    # TIPI α
+    0.83, 0.853, 0.818,
+    # SDQ α
+    0.79, 0.806, 0.778,
+    # TIPI β
+    0.04, 0.037, 0.048,
+    # SDQ β
+    0.11, 0.086, 0.123,
+    # TIPI γ1
+    0.10, 0.312, -0.154,
+    # SDQ γ1
+    0.20, 0.370, 0.038,
+    # TIPI γ2
+    0.05, 0.032, 0.069,
+    # SDQ γ2
+    0.06, 0.046, 0.083,
+    # TIPI γ12
+    -0.04, -0.092, 0.004,
+    # SDQ γ12
+    -0.13, -0.112, -0.149
+  ),
+  SE = c(
+    # TIPI α
+    0.02, 0.021, 0.023,
+    # SDQ α
+    0.02, 0.021, 0.023,
+    # TIPI β
+    0.01, 0.007, 0.008,
+    # SDQ β
+    0.01, 0.010, 0.013,
+    # TIPI γ1
+    0.11, 0.183, 0.157,
+    # SDQ γ1
+    0.11, 0.184, 0.158,
+    # TIPI γ2
+    0.01, 0.019, 0.020,
+    # SDQ γ2
+    0.01, 0.012, 0.016,
+    # TIPI γ12
+    0.03, 0.037, 0.036,
+    # SDQ γ12
+    0.03, 0.041, 0.052
+  )
+)
+
+# Calculate confidence intervals
+data <- data %>%
+  mutate(lower_ci = Estimate - 1.96 * SE,
+         upper_ci = Estimate + 1.96 * SE)
+
+# Reorder the Parameter variable as a factor
+data <- data %>%
+  mutate(Parameter = factor(Parameter, 
+                            levels = c("α (Cognition)", 
+                                       "β (Noncognition)", 
+                                       "γ1 (Cognition^2)", 
+                                       "γ2 (Noncognition^2)", 
+                                       "γ12 (Cognition*Noncognition)")))
+
+# Create the plot with reordered parameters
+ggplot(data, aes(x = Estimate, y = Parameter, color = Model, shape = Sample)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  
+  # Add capped error bars
+  geom_errorbar(aes(xmin = lower_ci, xmax = upper_ci), 
+                position = position_dodge(width = 0.5), width = 0.2, size = 0.7) +
+  
+  # Add the points
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  
+  scale_color_manual(values = c("TIPI (Conscientiousness)" = "#2c7fb8", 
+                                "SDQ (Focused Behaviour)" = "#f0a530")) +
+  scale_shape_manual(values = c("Full Sample" = 16, "Boys" = 17, "Girls" = 15)) +
+  labs(title = "Translog Production Function Estimates for Maths Achievement",
+       subtitle = "Comparison of TIPI and SDQ Models Across Full Sample and Gender Subgroups",
+       x = "Estimate with 95% CI",
+       y = "",
+       color = "Model",
+       shape = "Sample") +
+  theme_minimal() +
+  theme(legend.position = "right",
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12),
+        axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 10)) +
+  
+  scale_x_continuous(limits = c(-0.5, 1), 
+                     breaks = seq(-0.5, 1, by = 0.1),
+                     labels = function(x) sprintf("%.1f", x))
+
+# Save the plot
+ggsave("maths_tipi_sdq_comparison_reordered.png", width = 12, height = 8, dpi = 300)
+
+# English
+# Create dataframe with the extracted data for Maths, excluding A
+data <- data.frame(
+  Parameter = rep(c("α (Cognition)", "β (Noncognition)", "γ1 (Cognition^2)", "γ2 (Noncognition^2)", "γ12 (Cognition*Noncognition)"), each = 6),
+  Model = rep(rep(c("TIPI (Conscientiousness)", "SDQ (Focused Behaviour)"), each = 3), 5),
+  Sample = rep(c("Full Sample", "Boys", "Girls"), 10),
+  Estimate = c(
+    # TIPI α
+    0.45, 0.510, 0.442,
+    # SDQ α
+    0.41, 0.468, 0.414,
+    # TIPI β
+    0.02, 0.020, 0.017,
+    # SDQ β
+    0.09, 0.071, 0.076,
+    # TIPI γ1
+    -0.25, -0.248, -0.318,
+    # SDQ γ1
+    -0.17, -0.141, -0.166,
+    # TIPI γ2
+    0.03, 0.027, 0.016,
+    # SDQ γ2
+    0.06, 0.047, 0.063,
+    # TIPI γ12
+    -0.03, -0.038, -0.008,
+    # SDQ γ12
+    -0.12, -0.118, -0.152
+  ),
+  SE = c(
+    # TIPI α
+    0.01, 0.017, 0.017,
+    # SDQ α
+    0.01, 0.018, 0.017,
+    # TIPI β
+    0.00, 0.006, 0.006,
+    # SDQ β
+    0.01, 0.008, 0.010,
+    # TIPI γ1
+    0.09, 0.153, 0.116,
+    # SDQ γ1
+    0.09, 0.154, 0.117,
+    # TIPI γ2
+    0.01, 0.016, 0.015,
+    # SDQ γ2
+    0.01, 0.010, 0.012,
+    # TIPI γ12
+    0.02, 0.031, 0.027,
+    # SDQ γ12
+    0.02, 0.034, 0.038
+  )
+)
+# Calculate confidence intervals
+data <- data %>%
+  mutate(lower_ci = Estimate - 1.96 * SE,
+         upper_ci = Estimate + 1.96 * SE)
+
+# Reorder the Parameter variable as a factor
+data <- data %>%
+  mutate(Parameter = factor(Parameter, 
+                            levels = c("α (Cognition)", 
+                                       "β (Noncognition)", 
+                                       "γ1 (Cognition^2)", 
+                                       "γ2 (Noncognition^2)", 
+                                       "γ12 (Cognition*Noncognition)")))
+
+# Create the plot with reordered parameters
+ggplot(data, aes(x = Estimate, y = Parameter, color = Model, shape = Sample)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  
+  # Add capped error bars
+  geom_errorbar(aes(xmin = lower_ci, xmax = upper_ci), 
+                position = position_dodge(width = 0.5), width = 0.2, size = 0.7) +
+  
+  # Add the points
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  
+  scale_color_manual(values = c("TIPI (Conscientiousness)" = "#2c7fb8", 
+                                "SDQ (Focused Behaviour)" = "#f0a530")) +
+  scale_shape_manual(values = c("Full Sample" = 16, "Boys" = 17, "Girls" = 15)) +
+  labs(title = "Translog Production Function Estimates for English Achievement",
+       subtitle = "Comparison of TIPI and SDQ Models Across Full Sample and Gender Subgroups",
+       x = "Estimate with 95% CI",
+       y = "",
+       color = "Model",
+       shape = "Sample") +
+  theme_minimal() +
+  theme(legend.position = "right",
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12),
+        axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 10)) +
+  scale_x_continuous(limits = c(-0.6, 0.6), 
+                     breaks = seq(-0.6, 0.6, by = 0.1),
+                     labels = function(x) sprintf("%.1f", x))
+```
