@@ -1,0 +1,54 @@
+---
+title: "Two Sides of the Same Coin? How Cognitive and Noncognitive Skills Shape Academic Achievement"
+author: "Beatriz Gietner"
+institute: "UCD School of Economics"
+date: today()
+format:
+  revealjs: default
+  pdf: default
+editor: visual
+---
+
+## Questions
+
+This research examines the **joint effects of cognitive and noncognitive skills** on **academic achievement**.
+
+→ What are the relative contributions of cognitive and noncognitive skills to academic performance, as measured by standardized test scores?
+
+→ To what extent can noncognitive skills substitute for cognitive skills in producing academic outcomes, and how does this vary across subjects and genders?
+
+→ Which type of skill improvement (cognitive or noncognitive) has a greater impact on grades, and does this differ between subjects like Maths and English?
+
+## Introduction
+
+-   **Context**: Irish secondary students, using Growing Up in Ireland longitudinal study data.
+
+-   **Methodology**: linear and translog production functions.
+
+-   **Main contribution**: Application of a flexible translog production function to quantify cognitive–noncognitive interactions in academic achievement across genders and subjects.
+
+-   **Key insights:**
+
+    -   Non-linear relationships and varying substitution elasticities across subjects and genders
+    -   Nuanced view of skill complementarity and substitutability
+    -   Optimization of human capital formation and resource allocation
+    -   Gender gap implications in educational strategies
+
+-   **Impact**: Informs targeted interventions and policies, emphasizing personalized approaches to human capital development.
+
+## Timeline {#Timeline}
+
+**Timeline:**
+
+| **Event**                        | **Date**        | **Age (in years)** | **Variables of interest**                                                          |
+|:--------------|:--------------|:-----------------|:------------------------|
+| Study-child is born              | Nov/97 - Oct/98 | 0                  |                                                                                    |
+| Wave 2 data collection           | Aug/11 - Mar/12 | 13                 | Independent variables:<br>Cognition composite,<br>SDQ and TIPI scales,<br>controls |
+| Study-child sits the Junior Cert | Jun/13 - Jun/14 | 15-16              |                                                                                    |
+| Wave 3 data collection           | Apr/15 - Aug/16 | 17-18              | Dependent variables:<br>Junior Cert scores in<br>Maths and English                 |
+
+: Timeline of Events - Growing Up in Ireland '98 Cohort {#tbl-timeline}
+
+::: {.footer style="text-align: center;"}
+[Main Variables](#MainVariables){.btn .btn-primary} [Control Variables](#ControlVariables){.btn .btn-primary} [Notes I](#NotesI){.btn .btn-primary} [Notes II](#NotesII){.btn .btn-primary}
+:::
